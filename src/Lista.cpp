@@ -1,12 +1,13 @@
 #include <omp.h>
 #include <time.h>
-#include "Lista.h"
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <list>
 #include <algorithm>
+
+#include "../include/Lista.h"
 
 using namespace std;
 

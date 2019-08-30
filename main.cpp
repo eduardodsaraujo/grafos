@@ -1,74 +1,46 @@
-#include "Matriz.h"
-#include "Matriz.cpp"
-#include "Lista.h"
-#include "Lista.cpp"
-
+#include <string>
 #include <omp.h>
 #include <stdio.h>
 #include <time.h>
 
-#include <iostream>
-#include <string>
-#include <sstream>
+#include "src/Lista.cpp"
+#include "src/Matriz.cpp"
+#include "include/Matriz.h"
+#include "include/Lista.h"
+#include "include/Constantes.h"
 
 using namespace std;
-
-//true = entrada manual. false = pega pelas const abaixo
-const bool inOverride = false;
-const bool log = false;
-const bool runBFS = true;
-const bool runDFS = false;
-//nome do arquivo padrão
-const string arquivoDefault = "as_graph";
-
-//1 = matriz, 2 = lista, qualquer outra coisa = pula direto para as calcular as componentes
-const string estruturaDefault = "1";
-
-//1 para paralelizar o carregamento de matriz em memória, 2 para rodar uma bfs em cada thread, qualquer outra coisa para rodar single
-//     OBSERVAÇÕES: PARA UM LOG PRECISO, UTILIZAR 1 (Paralelizar apenas o carregamento de matriz)
-//     CAUTION: CADA BFS IRÁ ALOCAR SEU PRÓPRIO ESPAÇO EM MEMÓRIA!
-const string ompDefault = "1";
-//1 para calcular as componentes conexas, qualquer outra coisa para fechar direto
-const string componentesDefault = "2";
-//1 para calcular o diâmetro, qualquer outra coisa para fechar direto
-const string diametroDefault = "2";
-
-//Vértice mínimo para iniciar as BFS/DFS
-const int vMin = 1;
-//Vértice máximo para iniciar as BFS/DFS
-const int vMax = 1;
-
 
 int main()
 {
   //Define o arquivo de entrada
   string inputFile;
-  if (inOverride == true)
+  if (Constantes::inOverride == true)
   {
     cout << "Insira o nome do arquivo: ";
     cin >> inputFile;
   }
   else
   {
-    inputFile = arquivoDefault;
+    inputFile = Constantes::arquivoDefault;
   }
 
 
   //Define o tipo de estrutura a ser utilizado
   string estrutura;
-  if (inOverride == true)
+  if (Constantes::inOverride == true)
   {
     cout << "Digite o tipo de estrutura a ser utilizado - 1 para matriz, 2 para lista, e qualquer outra tecla para pular: ";
     cin >> estrutura;
   }
   else
   {
-    estrutura = estruturaDefault;
+    estrutura = Constantes::estruturaDefault;
   }
 
   //Define as opções de paralelização
   string ompSettings;
-  if (inOverride == true)
+  if (Constantes::inOverride == true)
   {
     if (estrutura == "1")
     {
@@ -83,11 +55,11 @@ int main()
   }
   else
   {
-    ompSettings = ompDefault;
+    ompSettings = Constantes::ompDefault;
   }
 
 
-  ofstream openTime;
+  std::ofstream openTime;
   openTime.open("run_log.txt");
   clock_t tOpen = clock();
 
@@ -110,7 +82,7 @@ int main()
 
     //BFS e DFS para cada ponto. Roda em paralelo caso seja escolhida a opção 2
     #pragma omp parallel for if (ompSettings == "2")
-    for (int i = vMin; i <= vMax; i++)
+    for (int i = Constantes::vMin; i <= Constantes::vMax; i++)
     {
       if (ompSettings == "1")
       {
@@ -118,12 +90,12 @@ int main()
         nomeSaida << i; //Dá cast para string
 
         //BFS
-        if (runBFS == true)
+        if (Constantes::runBFS == true)
         {
           tInicio = clock();
           // cout << "Iniciando a BFS em matriz com inicio no vertice " << i << endl;
-          matriz.BFS(i, (inputFile+"_DFS_MatrizAdj_"+nomeSaida.str()).c_str(), log);
-          if (log == true)
+          matriz.BFS(i, (inputFile+"_DFS_MatrizAdj_"+nomeSaida.str()).c_str(), Constantes::log);
+          if (Constantes::log == true)
           {
             matriz.geraEstatisticas((inputFile+"_BFS_"+nomeSaida.str()).c_str());
             executionTime << "Tempo para rodar a BFS a partir do vértice " << i << ": " << (clock() - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
@@ -131,12 +103,12 @@ int main()
         }
 
         //DFS
-        if (runDFS == true)
+        if (Constantes::runDFS == true)
         {
           tInicio = clock();
           // cout << "Iniciando a DFS em matriz com inicio no vertice " << i << endl;
-          matriz.DFS(i, (inputFile+"_DFS_MatrizAdj_"+nomeSaida.str()).c_str(), log);
-          if (log == true)
+          matriz.DFS(i, (inputFile+"_DFS_MatrizAdj_"+nomeSaida.str()).c_str(), Constantes::log);
+          if (Constantes::log == true)
           {
             matriz.geraEstatisticas((inputFile+"_DFS_"+nomeSaida.str()).c_str());
             executionTime << "Tempo para rodar a DFS a partir do vértice " << i << ": " << (clock() - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
@@ -154,12 +126,12 @@ int main()
         matrizInt.carregar(inputFile, ompSettings);
 
         //BFS
-        if (runBFS == true)
+        if (Constantes::runBFS == true)
         {
           tInicio = clock();
           // cout << "Iniciando a BFS em matriz com inicio no vertice " << i << endl;
-          matrizInt.BFS(i, (inputFile+"_BFS_MatrizAdj_"+nomeSaida.str()).c_str(), log);
-          if (log == true)
+          matrizInt.BFS(i, (inputFile+"_BFS_MatrizAdj_"+nomeSaida.str()).c_str(), Constantes::log);
+          if (Constantes::log == true)
           {
             matrizInt.geraEstatisticas((inputFile+"_BFS_"+nomeSaida.str()).c_str());
             executionTime << "Tempo para rodar a BFS a partir do vértice " << i << ": " << (clock() - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
@@ -167,12 +139,12 @@ int main()
         }
 
         //DFS
-        if (runDFS == true)
+        if (Constantes::runDFS == true)
         {
           tInicio = clock();
           // cout << "Iniciando a DFS em matriz com inicio no vertice " << i << endl;
-          matrizInt.DFS(i, (inputFile+"_DFS_MatrizAdj_"+nomeSaida.str()).c_str(), log);
-          if (log == true)
+          matrizInt.DFS(i, (inputFile+"_DFS_MatrizAdj_"+nomeSaida.str()).c_str(), Constantes::log);
+          if (Constantes::log == true)
           {
             matrizInt.geraEstatisticas((inputFile+"_DFS_"+nomeSaida.str()).c_str());
             executionTime << "Tempo para rodar a BFS a partir do vértice " << i << ": " << (clock() - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
@@ -201,7 +173,7 @@ int main()
 
     //BFS e DFS para cada ponto. Roda em paralelo caso seja escolhida a opção 2
     #pragma omp parallel for if (ompSettings == "2")
-    for (int i = vMin; i <= vMax; i++)
+    for (int i = Constantes::vMin; i <= Constantes::vMax; i++)
     {
       if (ompSettings == "1")
       {
@@ -209,12 +181,12 @@ int main()
         nomeSaida << i; //Dá cast para string
 
         //BFS
-        if (runBFS == true)
+        if (Constantes::runBFS == true)
         {
           tInicio = clock();
           // cout << "Iniciando a BFS em lista com inicio no vertice " << i << endl;
-          lista.BFS(i, (inputFile+"_BFS_ListaAdj_"+nomeSaida.str()).c_str(), log);
-          if (log == true)
+          lista.BFS(i, (inputFile+"_BFS_ListaAdj_"+nomeSaida.str()).c_str(), Constantes::log);
+          if (Constantes::log == true)
           {
             lista.geraEstatisticas((inputFile+"_BFS_"+nomeSaida.str()).c_str());
             executionTime << "Tempo para rodar a BFS a partir do vértice " << i << ": " << (clock() - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
@@ -222,12 +194,12 @@ int main()
         }
 
         //DFS
-        if (runDFS == true)
+        if (Constantes::runDFS == true)
         {
           tInicio = clock();
           // cout << "Iniciando a DFS em lista com inicio no vertice " << i << endl;
-          lista.DFS(i, (inputFile+"_DFS_ListaAdj_"+nomeSaida.str()).c_str(), log);
-          if (log == true)
+          lista.DFS(i, (inputFile+"_DFS_ListaAdj_"+nomeSaida.str()).c_str(), Constantes::log);
+          if (Constantes::log == true)
           {
             lista.geraEstatisticas((inputFile+"_DFS_"+nomeSaida.str()).c_str());
             executionTime << "Tempo para rodar a DFS a partir do vértice " << i << ": " << (clock() - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
@@ -245,12 +217,12 @@ int main()
         listaInt.carregar(inputFile);
 
         //BFS
-        if (runBFS == true)
+        if (Constantes::runBFS == true)
         {
           tInicio = clock();
           cout << "Iniciando a BFS em lista com inicio no vertice " << i << endl;
-          listaInt.BFS(i, (inputFile+"_BFS_ListaAdj_"+nomeSaida.str()).c_str(), log);
-          if (log == true)
+          listaInt.BFS(i, (inputFile+"_BFS_ListaAdj_"+nomeSaida.str()).c_str(), Constantes::log);
+          if (Constantes::log == true)
           {
             listaInt.geraEstatisticas((inputFile+"_BFS_"+nomeSaida.str()).c_str());
             executionTime << "Tempo para rodar a BFS a partir do vértice " << i << ": " << (clock() - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
@@ -258,12 +230,12 @@ int main()
         }
 
         //DFS
-        if (runDFS == true)
+        if (Constantes::runDFS == true)
         {
           tInicio = clock();
           cout << "Iniciando a DFS em lista com inicio no vertice " << i << endl;
-          listaInt.DFS(i, (inputFile+"_DFS_ListaAdj_"+nomeSaida.str()).c_str(), log);
-          if (log == true)
+          listaInt.DFS(i, (inputFile+"_DFS_ListaAdj_"+nomeSaida.str()).c_str(), Constantes::log);
+          if (Constantes::log == true)
           {
             listaInt.geraEstatisticas((inputFile+"_DFS_"+nomeSaida.str()).c_str());
             executionTime << "Tempo para rodar a DFS a partir do vértice " << i << ": " << (clock() - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
@@ -278,7 +250,7 @@ int main()
 
   //Define se irá ser feito cálculo de componentes
   string calcularComponentes;
-  if (inOverride == true)
+  if (Constantes::inOverride == true)
   {
     cout << "Deseja calcular a quantidade de componentes? Digite 1 para sim, e qualquer outra tecla para sair: ";
     cin >> calcularComponentes;
@@ -286,7 +258,7 @@ int main()
 
   else
   {
-    calcularComponentes = componentesDefault;
+    calcularComponentes = Constantes::componentesDefault;
   }
 
   //Caso inicie, inicia uma lista para calcular as componentes conexas
@@ -299,7 +271,7 @@ int main()
 
   //Define se irá ser feito cálculo de diâmetro
   string calcularDiametro;
-  if (inOverride == true)
+  if (Constantes::inOverride == true)
   {
     cout << "Deseja calcular o diâmetro? Digite 1 para sim, e qualquer outra tecla para sair: ";
     cin >> calcularDiametro;
@@ -307,7 +279,7 @@ int main()
 
   else
   {
-    calcularDiametro = diametroDefault;
+    calcularDiametro = Constantes::diametroDefault;
   }
 
   //Caso inicie, inicia uma lista para calcular as componentes conexas
