@@ -1,4 +1,3 @@
-#include <bits/stdc++.h>
 #include <omp.h>
 #include <time.h>
 #include "Lista.h"
@@ -12,8 +11,6 @@
 //TODO:
 
 using namespace std;
-
-typedef pair<int, int> par;
 
 Lista::bubbleSort(std::vector < vector < int> > &lista, int tamanho) //Ordena um vetor por bubblesort, começando por i = 1
 {
