@@ -14,10 +14,9 @@ class Lista
     excentricidade();
     minimumSpanningTree();
     maiorGrau(int quant);
-    distanciaMedia();
     vizinhos(int vert);
-    BFS(int inicio, std::string outputName, bool logFile);
-    DFS(int inicio, std::string outputName, bool logFile);
+    BFS(int inicio, std::string outputName, bool log);
+    DFS(int inicio, std::string outputName, bool log);
     Pesos(int inicio, bool logFile, bool mst);
     BFScomponentes(int inicio, std::vector<bool> &explorados, std::vector<int> &elementos);
     int BFSdiametro(int inicio, std::vector<bool> explorados);
@@ -26,7 +25,6 @@ class Lista
     diametro(std::string inputFile);
     grauCalc(std::string outputName);
     bool negativo;
-    buscaNomes(std::string pesquisador);
   protected:
 
   private:

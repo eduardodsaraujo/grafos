@@ -430,3 +430,131 @@ Lista::diametro(string outputName)
   outputDiametro << "Tempo de execucao: " << (tFinal - tInicio)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
   outputDiametro.close();
 }
+
+
+Lista::Pesos(int inicio, bool logFile, bool mst = false)
+{
+
+  std::vector <bool> explorados(vertMax, false);
+  std::vector <float> distancia(vertMax, 10000);
+
+  distancia[inicio] = 0;
+  pai.clear(); //Limpa a lista de pais
+  pai.resize(vertMax); //Redimensiona a lista conforme necessário
+  pai[inicio] = inicio; //Coloca o pai do vértice inicial como ele mesmo
+
+  distOrigem.resize(vertMax); //Redimensiona a lista conforme necessário
+
+  priority_queue< par, vector <par> , greater<par> > fila;
+
+  fila.push(make_pair(distancia[inicio], inicio));
+
+  while (!fila.empty())
+  {
+    int u;
+    u = fila.top().second; //Pega o vértice atual
+    fila.pop();  //Remove o vértice atual da fila
+
+    explorados[u] = true;
+    distOrigem[u] = distancia[u];
+
+    for (int i = 1; i <= listaAdj[u].size()-1; i++) //Varre o array de vértices
+    {
+
+      int v;
+      float pesoUV;
+      v = listaAdj[u][i];
+      pesoUV = listaPesos[u][i];
+
+      if (explorados[v] == false)
+      {
+        if (mst == false)
+        //Dijkstra
+        {
+          if(distancia[v] > (distancia[u] + pesoUV))
+          {
+            distancia[v] = distancia[u] + pesoUV;
+            fila.push(make_pair(distancia[v], v));
+            pai[v] = u;
+            // cout << u << " " << listaAdj[u][i] << " " << distancia[u] << endl; //Debug
+          }
+        }
+        else
+        //Prim
+        {
+          if(distancia[v] > pesoUV)
+          {
+            distancia[v] = pesoUV;
+            fila.push(make_pair(distancia[v], v));
+            pai[v] = u;
+          }
+        }
+      }
+    }
+  }
+}
+
+Lista::excentricidade()
+{
+  float distMax = 0;
+  for(int i= 1; i <= nVertices; i++)
+  {
+    if (distOrigem[i] > distMax)
+    {
+      distMax = distOrigem[i];
+    }
+  }
+  cout << distMax << endl;
+}
+
+Lista::minimumSpanningTree()
+{
+  ofstream output;
+  output.open("runlog.txt");
+
+  int peso = 0;
+  for (int i = 1; i <= nVertices; i++)
+  {
+    output << pai[i] << " " << i << " " << distOrigem[i] << endl;
+    peso = peso + distOrigem[i];
+  }
+  output.close();
+  cout << peso << endl;;
+}
+
+Lista::maiorGrau(int quant)
+{
+  std::vector <int> grau(vertMax, 0);
+
+  for (int i = 1; i <= nVertices; i++)
+  {
+    grau[pai[i]]++;
+    grau[i]++;
+  }
+
+  for (int i = 1; i <= quant; i++)
+  {
+    int max = *std::max_element(grau.begin(), grau.end());
+    int temp = 0;
+    int it = 0;
+    while (temp != max)
+    {
+      temp = grau[it];
+      it++;
+    }
+    cout << it-1 << " " << grau[it-1] << endl;
+    grau[it-1] = 0;
+  }
+}
+
+Lista::vizinhos(int vert)
+{
+  cout << pai[vert] << endl;
+  for(int i = 1; i <= nVertices; i++)
+  {
+    if(pai[i] == vert)
+    {
+      cout << i << endl;
+    }
+  }
+}
