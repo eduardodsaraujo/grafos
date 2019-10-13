@@ -21,7 +21,7 @@ const bool runBFS = false;
 const bool runDFS = false;
 //nome do arquivo padrão
 
-const string arquivoDefault = "grafo_1";
+const string arquivoDefault = "grafo_4";
 // const string arquivoDefault = "dblp";
 // const string arquivoDefault = "live_journal";
 
@@ -46,8 +46,6 @@ const int vMax = 1;
 int main()
 {
 
-    Lista lista;
-    clock_t tOpen = clock();
 
   /*  for (int i = 1; i <= 100; i++)
     {
@@ -64,10 +62,17 @@ int main()
     // lista.buscaNomes("123");
 
     // lista.carregar("rede_colaboracao");
-    lista.carregar("grafo_1");
-    lista.Pesos(1, false, true);
 
-    lista.maiorGrau(3);
+    Lista lista;
+    lista.carregar("grafo_3");
+    clock_t tOpen = clock();
+
+    lista.Pesos(1, false, true);
+    cout << "Tempo de execução: " << (clock() - tOpen)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
+
+    // lista.minimumSpanningTree();
+
+    // lista.maiorGrau(3);
     // lista.Pesos(343930, false, true);
     // lista.vizinhos(343930);
     // lista.caminho(11365);
@@ -79,9 +84,8 @@ int main()
     // lista.minimumSpanningTree();
     // lista.distanrciaMedia();
 
-    cout << "Tempo de execução: " << (clock() - tOpen)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
 
 
     // lista.maiorGrau(1);
-  
+
 }

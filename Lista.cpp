@@ -49,10 +49,13 @@ Lista::carregar(std::string arquivo)
     linhaInt >> nVertices;
     vertMax = nVertices+1; //Índice para auxiliar loops e matrizes
     listaAdj.resize(vertMax); //Redimensiona a lista
+    listaPesos.resize(vertMax);
+    negativo = false;
 
     for (int i = 1; i <= nVertices; i++)
     {
       listaAdj[i].push_back(i); //Adiciona um vértice do elemento para ele mesmo. Pode ser útil no futuro, e evita bugs com índice 0
+      listaPesos[i].push_back(i); //Adiciona um vértice do elemento para ele mesmo. Pode ser útil no futuro, e evita bugs com índice 0
     }
 
     //Inicializa a Lista e redimensiona os vértices
@@ -62,13 +65,23 @@ Lista::carregar(std::string arquivo)
     //Preenche a Lista conforme o arquivo
 
     int v, a;
-    while (inFile >> v >> a)
+    float w;
+    while (inFile >> v >> a >> w)
     {
       //Adiciona a aresta ao vetor
       if(v <= vertMax && a <= vertMax)
       {
         listaAdj[v].push_back(a);
         listaAdj[a].push_back(v);
+        if (w >= 0)
+        {
+          listaPesos[v].push_back(w);
+          listaPesos[a].push_back(w);
+        }
+        else
+        {
+          negativo = true;
+        }
         nArestas++;
       }
     }
@@ -436,7 +449,7 @@ Lista::Pesos(int inicio, bool logFile, bool mst = false)
 {
 
   std::vector <bool> explorados(vertMax, false);
-  std::vector <float> distancia(vertMax, 10000);
+  std::vector <float> distancia(vertMax, 100000);
 
   distancia[inicio] = 0;
   pai.clear(); //Limpa a lista de pais
@@ -476,7 +489,7 @@ Lista::Pesos(int inicio, bool logFile, bool mst = false)
             distancia[v] = distancia[u] + pesoUV;
             fila.push(make_pair(distancia[v], v));
             pai[v] = u;
-            // cout << u << " " << listaAdj[u][i] << " " << distancia[u] << endl; //Debug
+            // cout << u << " " << listaAdj[u][i] << " " << distancia[v] << endl; //Debug
           }
         }
         else
@@ -487,6 +500,7 @@ Lista::Pesos(int inicio, bool logFile, bool mst = false)
             distancia[v] = pesoUV;
             fila.push(make_pair(distancia[v], v));
             pai[v] = u;
+            // cout << u << " " << listaAdj[u][i] << " " << listaPesos[u][i] << " " << distancia[v] << endl; //Debug
           }
         }
       }
