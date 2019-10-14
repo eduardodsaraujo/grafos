@@ -449,7 +449,7 @@ Lista::Pesos(int inicio, bool logFile, bool mst = false)
 {
 
   std::vector <bool> explorados(vertMax, false);
-  std::vector <float> distancia(vertMax, 100000);
+  std::vector <float> distancia(vertMax, 99999999);
 
   distancia[inicio] = 0;
   pai.clear(); //Limpa a lista de pais
@@ -546,7 +546,7 @@ Lista::maiorGrau(int quant)
     grau[i]++;
   }
 
-  for (int i = 1; i <= quant; i++)
+  for (int i = 1; i <= quant+1; i++)
   {
     int max = *std::max_element(grau.begin(), grau.end());
     int temp = 0;
@@ -571,4 +571,77 @@ Lista::vizinhos(int vert)
       cout << i << endl;
     }
   }
+}
+
+Lista::caminhos()
+{
+  for (int i = 1; i <= 5; i++)
+  {
+    int n = i * 10;
+    cout << n << ": " << distOrigem[n] << " / Caminho: ";
+    int v = n;
+    while (v != 1)
+    {
+      cout << v << ";";
+      v = pai[v];
+    }
+    cout << 1 << endl;
+  }
+}
+
+Lista::caminhosColaboradores()
+{
+  int v = 11365;
+  cout << "Alan M. Turing: " << distOrigem[v] << " / Caminho: ";
+  if (distOrigem[v] != 0)
+  {
+    while (v != 2722)
+    {
+      cout << v << ";";
+      v = pai[v];
+    }
+    cout << "Edsger W. Dijkstra";
+  }
+  cout << endl;
+
+
+  v = 471365;
+  cout << "J. B. Kruskal: " << distOrigem[v] << " / Caminho: ";
+  while (v != 2722)
+  {
+    cout << v << ";";
+    v = pai[v];
+  }
+  cout << "Edsger W. Dijkstra" << endl;
+
+
+  v = 5709;
+  cout << "Jon M. Kleinberg: " << distOrigem[v] << " / Caminho: ";
+  while (v != 2722)
+  {
+    cout << v << ";";
+    v = pai[v];
+  }
+  cout << "Edsger W. Dijkstra" << endl;
+
+
+  v = 11386;
+  cout << "Eva Tardos: " << distOrigem[v] << " / Caminho: ";
+  while (v != 2722)
+  {
+    cout << v << ";";
+    v = pai[v];
+  }
+  cout << "Edsger W. Dijkstra" << endl;
+
+
+  v = 343930;
+  cout << "Daniel R. Figueiredo: " << distOrigem[v] << " / Caminho: ";
+  while (v != 2722)
+  {
+    cout << v << ";";
+    v = pai[v];
+  }
+  cout << "Edsger W. Dijkstra" << endl;
+
 }
