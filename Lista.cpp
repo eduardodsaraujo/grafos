@@ -573,20 +573,16 @@ Lista::vizinhos(int vert)
   }
 }
 
-Lista::caminhos()
+Lista::caminhos(int inicio, int fim)
 {
-  for (int i = 1; i <= 5; i++)
+  cout << inicio << ": " << distOrigem[inicio] << " / Caminho: ";
+  int v = inicio;
+  while (v != fim)
   {
-    int n = i * 10;
-    cout << n << ": " << distOrigem[n] << " / Caminho: ";
-    int v = n;
-    while (v != 1)
-    {
-      cout << v << ";";
-      v = pai[v];
-    }
-    cout << 1 << endl;
+    cout << v << ";";
+    v = pai[v];
   }
+  cout << fim << endl;
 }
 
 Lista::caminhosColaboradores()

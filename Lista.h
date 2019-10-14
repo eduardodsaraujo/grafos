@@ -24,7 +24,7 @@ class Lista
     componentes(std::string outputName);
     diametro(std::string inputFile);
     grauCalc(std::string outputName);
-    caminhos();
+    caminhos(int inicio, int fim);
     caminhosColaboradores();
     bool negativo;
   protected:
