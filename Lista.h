@@ -36,8 +36,8 @@ class Lista
     int vertMax;   //Índice do maior vértice. Será nVertices+1, utilizado para auxiliar loops
     int nArestas; //Número de arestas
     std::vector < std::vector<int> > listaAdj; //Usado para representar a lista.
-    std::vector < std::vector<float> > listaPesos; //Usado para representar os pesos.
-    std::vector <float> distOrigem; //Lista da distância até a origem
+    std::vector < std::vector<double> > listaPesos; //Usado para representar os pesos.
+    std::vector <double> distOrigem; //Lista da distância até a origem
     std::vector <int> grau; //Lista de níveis
     std::vector <int> nivel; //Lista de níveis
     std::vector <int> pai; //Lista de pais

@@ -49,9 +49,12 @@ int main()
     Lista lista;
     lista.carregar("grafo_6");
     clock_t tOpen = clock();
+
+    // lista.Pesos(2722, false);
+    // lista.caminhos(5709, 2722);
+
     lista.Pesos(1, false, true);
     lista.maiorGrau(3);
-    // lista.vizinhos(343930);
 
     cout << "Tempo de execução: " << (clock() - tOpen)/(CLOCKS_PER_SEC/1000) << " ms" << endl;
 }

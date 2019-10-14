@@ -13,7 +13,7 @@
 
 using namespace std;
 
-typedef pair<int, int> par;
+typedef pair<double, double> par;
 
 Lista::bubbleSort(std::vector < vector < int> > &lista, int tamanho) //Ordena um vetor por bubblesort, começando por i = 1
 {
@@ -65,7 +65,7 @@ Lista::carregar(std::string arquivo)
     //Preenche a Lista conforme o arquivo
 
     int v, a;
-    float w;
+    double w;
     while (inFile >> v >> a >> w)
     {
       //Adiciona a aresta ao vetor
@@ -289,7 +289,7 @@ Lista::geraEstatisticas(std::string fileName)
   output << "Pai do vertice 30: " << pai[30] << endl;
 
   int grauMin, grauMax;
-  float grauMed, grauMediano;
+  double grauMed, grauMediano;
 
   output.close();
 }
@@ -357,7 +357,7 @@ Lista::grauCalc(std::string outputName)
 
  //Calcula o grau máximo e a média
  int grauMin, grauMax;
- float grauMed, grauMediano;
+ double grauMed, grauMediano;
  std::vector <int> arrayGrau;
 
  grauMax = 0;
@@ -449,7 +449,7 @@ Lista::Pesos(int inicio, bool logFile, bool mst = false)
 {
 
   std::vector <bool> explorados(vertMax, false);
-  std::vector <float> distancia(vertMax, 99999999);
+  std::vector <double> distancia(vertMax, 99999999);
 
   distancia[inicio] = 0;
   pai.clear(); //Limpa a lista de pais
@@ -475,7 +475,7 @@ Lista::Pesos(int inicio, bool logFile, bool mst = false)
     {
 
       int v;
-      float pesoUV;
+      double pesoUV;
       v = listaAdj[u][i];
       pesoUV = listaPesos[u][i];
 
@@ -510,7 +510,7 @@ Lista::Pesos(int inicio, bool logFile, bool mst = false)
 
 Lista::excentricidade()
 {
-  float distMax = 0;
+  double distMax = 0;
   for(int i= 1; i <= nVertices; i++)
   {
     if (distOrigem[i] > distMax)
