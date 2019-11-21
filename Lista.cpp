@@ -65,23 +65,24 @@ Lista::carregar(std::string arquivo)
     //Preenche a Lista conforme o arquivo
 
     int v, a;
-    double w;
-    while (inFile >> v >> a >> w)
+    // double w;
+    // while (inFile >> v >> a >> w)
+    while (inFile >> v >> a)
     {
       //Adiciona a aresta ao vetor
       if(v <= vertMax && a <= vertMax)
       {
         listaAdj[v].push_back(a);
         listaAdj[a].push_back(v);
-        if (w >= 0)
-        {
-          listaPesos[v].push_back(w);
-          listaPesos[a].push_back(w);
-        }
-        else
-        {
-          negativo = true;
-        }
+        // if (w >= 0)
+        // {
+        //   listaPesos[v].push_back(w);
+        //   listaPesos[a].push_back(w);
+        // }
+        // else
+        // {
+        //   negativo = true;
+        // }
         nArestas++;
       }
     }
@@ -90,7 +91,7 @@ Lista::carregar(std::string arquivo)
   inFile.close();
 }
 
-Lista::BFS(int inicio, std::string outputName, bool log)
+Lista::BFS(int inicio, std::string outputName = "", bool log = false)
 {
   std::vector <bool> explorados(vertMax, false);
 
@@ -148,7 +149,7 @@ Lista::BFS(int inicio, std::string outputName, bool log)
   // cout << "BFS executada com sucesso!" << endl;
 }
 
-Lista::DFS(int inicio, std::string outputName, bool log)
+Lista::DFS(int inicio, std::string outputName = "", bool log = false)
 {
   std::vector <bool> explorados(vertMax, false); //Cria a lista de vértices explorados
 
@@ -444,7 +445,6 @@ Lista::diametro(string outputName)
   outputDiametro.close();
 }
 
-
 Lista::Pesos(int inicio, bool logFile, bool mst = false)
 {
 
@@ -640,4 +640,168 @@ Lista::caminhosColaboradores()
   }
   cout << "Edsger W. Dijkstra" << endl;
 
+}
+
+bool Lista::bipartidoComponente(int inicio, std::vector<bool> &explorados)
+{
+  std::list <int> fila; //Cria uma fila S
+  fila.push_back(inicio); //Adiciona o vértice inicial à fila
+  cor[inicio] = 1;
+
+  while (fila.size() != 0)
+  {
+    int v;
+    v = fila.front(); //Pega o vértice atual
+    fila.pop_front();  //Remove o vértice atual da fila
+
+    explorados[v] = true;
+
+    for (int i = 1; i <= listaAdj[v].size()-1; i++) //Varre o array de vértices
+    {
+      int w;
+      w = listaAdj[v][i];
+
+      if (explorados[w] == false)
+      {
+        cor[w] = 1-cor[v];
+        explorados[w] = true;
+        fila.push_back(w);
+      } else {
+        if (cor[w] == cor[v])
+        {
+          return false;
+        }
+      }
+    }
+  }
+   return true;
+}
+
+bool Lista::bipartido()
+{
+  cor.resize(vertMax, -1);
+  std::vector <bool> explorados(vertMax, false);
+  for (int i = 1; i < nVertices; i++)
+  {
+    if (explorados[i] == false)
+    {
+      if(!bipartidoComponente(i, explorados))
+      {
+        return false;
+      };
+    }
+  }
+  return true;
+}
+
+Lista::BFSpair(std::vector <int> &parU, std::vector <int> &parV)
+{
+  std::list <int> fila; //Cria uma fila S
+
+  for (int u = 1; u <= nVertices; u++)
+  {
+    if (parU[u] == 0) //Caso o vértice U seja exposto, adiciona à fila
+    {
+      nivel[u] = 0;
+      fila.push_back(u);
+    } else  //Caso contrário, marca a distância como "infinito"
+    {
+      nivel[u] = 100000;
+    }
+  }
+
+  nivel[0] = 100000;
+  while (fila.size() != 0)
+  {
+    int u;
+    u = fila.front(); //Pega o vértice atual
+    fila.pop_front();  //Remove o vértice atual da fila
+
+    if(nivel[u] < nivel[0])
+    {
+      for (int i = 1; i <= listaAdj[u].size()-1; i++) //Varre os vizinhos do vértice
+      {
+        int v = listaAdj[u][i];
+        nivel[parV[v]] = nivel[u] + 1;
+        if(parV[v] == 0) //Caso ele seja exposto (ou seja, está pareado com o 0), encontrou um caminho aumentante
+        {
+          // nivel[0] = nivel[u] + 1;
+          return true;
+        }
+        if (nivel[parV[v]] == 100000) //Caso esteja emparelhado, verifica se o par já foi adicionado à fila
+        {
+          fila.push_back(parV[v]); //Caso não tenha sido, será adicionado nesse momento
+        }
+      }
+    }
+  }
+  return false; //Se chegar aqui não encontrou caminho aumentante, logo, convergiu
+}
+
+Lista::DFSpair(int u, std::vector <int> &parU, std::vector <int> &parV)
+{
+  if (u != 0)
+  {
+    for (int i = 1; i <= listaAdj[u].size()-1; i++) //Varre os vizinhos do vértice
+    {
+      int v = listaAdj[u][i];
+      if(nivel[parV[v]] == nivel[u] + 1)
+      {
+        if(DFSpair(parV[v], parU, parV) == true)
+        {
+          parV[v] = u;
+          parU[u] = v;
+          return true;
+        }
+      }
+    }
+    nivel[u] = 100000;
+    return false;
+  }
+  return true;
+}
+
+Lista::emparelhamento(std::string outputName = "temp")
+{
+  std::vector <int> parU(vertMax, -1); //Vértices do lado esquerdo
+  std::vector <int> parV(vertMax, -1); //Vértices do lado direito
+  for (int i = 1; i <= nVertices; i++)
+  {
+    if (cor[i] == 0)
+    {
+      parU[i] = 0;
+    } else
+      parV[i] = 0;
+  }
+
+  int n = 0;
+  nivel.clear(); //Limpa a lista de níveis
+  nivel.resize(vertMax); //Redimensiona a lista conforme necessário
+
+  while (BFSpair(parU, parV))
+  {
+    n++;
+    // cout << n << endl;
+
+    for(int u = 1; u <= nVertices; u++)
+    {
+      if(parU[u] == 0)
+      {
+        DFSpair(u, parU, parV);
+      }
+    }
+  }
+
+  ofstream output;
+  output.open((outputName+"_result.txt").c_str());
+  int emparelhamentoMaximo = 0;
+  for (int i = 1; i <= nVertices; i++)
+  {
+    if(cor[i] == 0)
+    {
+      emparelhamentoMaximo++;
+      output << parU[i] << " " << i << endl; //Adiciona o título
+    }
+  }
+  cout << emparelhamentoMaximo << endl;
 }

@@ -18,7 +18,6 @@ class Lista
     BFS(int inicio, std::string outputName, bool log);
     DFS(int inicio, std::string outputName, bool log);
     Pesos(int inicio, bool logFile, bool mst);
-    BFScomponentes(int inicio, std::vector<bool> &explorados, std::vector<int> &elementos);
     int BFSdiametro(int inicio, std::vector<bool> explorados);
     geraEstatisticas(std::string fileName);
     componentes(std::string outputName);
@@ -27,9 +26,15 @@ class Lista
     caminhos(int inicio, int fim);
     caminhosColaboradores();
     bool negativo;
+    bool bipartido();
+    BFSpair(std::vector <int> &parU, std::vector <int> &parV);
+    DFSpair(int u, std::vector <int> &parU, std::vector <int> &parV);
+    emparelhamento(std::string outputName);
   protected:
 
   private:
+    BFScomponentes(int inicio, std::vector<bool> &explorados, std::vector<int> &elementos);
+    bool bipartidoComponente(int inicio, std::vector<bool> &explorados);
     bubbleSort(std::vector < vector < int> > &lista, int tamanho); //Bubble Sort
     std::vector <int> elemComponentes; //Elementos (vértices) pertencentes às componentes
     int nVertices; //Núero de vértices
@@ -42,6 +47,7 @@ class Lista
     std::vector <int> nivel; //Lista de níveis
     std::vector <int> pai; //Lista de pais
     std::string inputFile; //Nome do arquivo de entrada
+    std::vector <int> cor; //Lista de cores
 };
 
 #endif // LISTA_H
