@@ -31,7 +31,7 @@ Lista::bubbleSort(std::vector < vector < int> > &lista, int tamanho) //Ordena um
   }
 }
 
-Lista::carregar(std::string arquivo)
+Lista::carregar(std::string arquivo, bool pesos = false)
 {
   //Abre o arquivo
   string inputFile = arquivo+".txt";
@@ -65,25 +65,38 @@ Lista::carregar(std::string arquivo)
     //Preenche a Lista conforme o arquivo
 
     int v, a;
-    // double w;
-    // while (inFile >> v >> a >> w)
-    while (inFile >> v >> a)
+    if (!pesos)
     {
-      //Adiciona a aresta ao vetor
-      if(v <= vertMax && a <= vertMax)
+      while (inFile >> v >> a)
       {
-        listaAdj[v].push_back(a);
-        listaAdj[a].push_back(v);
-        // if (w >= 0)
-        // {
-        //   listaPesos[v].push_back(w);
-        //   listaPesos[a].push_back(w);
-        // }
-        // else
-        // {
-        //   negativo = true;
-        // }
-        nArestas++;
+        //Adiciona a aresta ao vetor
+        if(v <= vertMax && a <= vertMax)
+        {
+          listaAdj[v].push_back(a);
+          listaAdj[a].push_back(v);
+          nArestas++;
+        }
+      }
+    }
+    else
+    {
+      double w;
+      while (inFile >> v >> a >> w)
+      {
+        //Adiciona a aresta ao vetor
+        if(v <= vertMax && a <= vertMax)
+        {
+          listaAdj[v].push_back(a);
+          listaAdj[a].push_back(v);
+
+          listaPesos[v].push_back(w);
+          listaPesos[a].push_back(w);
+          if (w < 0)
+          {
+            negativo = true;
+          }
+          nArestas++;
+        }
       }
     }
     // cout << "Lista carregada com sucesso!" << endl;
@@ -107,7 +120,7 @@ Lista::BFS(int inicio, std::string outputName = "", bool log = false)
   fila.push_back(inicio); //Adiciona o vértice inicial à fila
 
   ofstream output;
-  if(log == true)
+  if(log)
   {
     output.open((outputName+".csv").c_str()); //Inicializa o arquivo
     output << "Vertice;Pai;Grau" << endl; //Adiciona o título
@@ -127,14 +140,14 @@ Lista::BFS(int inicio, std::string outputName = "", bool log = false)
       int w;
       w = listaAdj[v][i];
 
-      if (explorados[w] == false)
+      if (!explorados[w])
       {
         explorados[w] = true;
         fila.push_back(w);
         nivel[w] = nivel[v] + 1; //O nível dele será o nível de quem descobiru ele +1
         pai[w] = v; //O pai dele será quem o descobriu
 
-        if (log == true)
+        if (log)
         {
           output << w << ";" << pai[w] << ";" << nivel[w] << endl; //Adiciona a linha no arquivo
         }
@@ -142,7 +155,7 @@ Lista::BFS(int inicio, std::string outputName = "", bool log = false)
     }
   }
 
-  if (log == true)
+  if (log)
   {
     output.close(); //Fecha o arquivo
   }
@@ -169,7 +182,7 @@ Lista::DFS(int inicio, std::string outputName = "", bool log = false)
   inicioStr << inicio; //Dá cast para string.....
 
   ofstream output;
-  if(log == true)
+  if(log)
   {
     output.open((outputName+".csv").c_str()); //Inicializa o arquivo
     output << "Vertice;Pai;Grau" << endl; //Adiciona o título
@@ -188,20 +201,20 @@ Lista::DFS(int inicio, std::string outputName = "", bool log = false)
       int w;
       w = listaAdj[v][i];
 
-      if (explorados[w] == false)
+      if (!explorados[w])
       {
         explorados[w] = true;
         fila.push_back(w);
         nivel[w] = nivel[v] + 1; //O nível dele será o nível de quem descobiru ele +1
         pai[w] = v; //O pai dele será quem o descobriu
-        if (log == true)
+        if (log)
         {
           output << w << ";" << pai[w] << ";" << nivel[w] << endl; //Adiciona a linha no arquivo
         }
       }
     }
   }
-  if (log == true)
+  if (log)
   {
     output.close(); //Fecha o arquivo
   }
@@ -228,7 +241,7 @@ Lista::BFScomponentes(int inicio, std::vector<bool> &explorados, std::vector<int
     {
       int w;
       w = listaAdj[v][i];
-      if (explorados[w] == false)
+      if (!explorados[w])
       {
         explorados[w] = true;
         elementos.push_back(w); //Adiciona W na lsita de elementos da componente
@@ -260,7 +273,7 @@ int Lista::BFSdiametro(int inicio, std::vector<bool> explorados)
       int w;
       w = listaAdj[v][i];
       // cout << w << endl;
-      if (explorados[w] == false)
+      if (!explorados[w])
       {
         explorados[w] = true;
         fila.push_back(w);
@@ -304,7 +317,7 @@ Lista::componentes(std::string outputName)
 
   for (int i = 1; i < nVertices; i++)
   {
-    if (explorados[i] == false)
+    if (!explorados[i])
     {
       if( listaAdj[i][0] == i )
       {
@@ -479,9 +492,9 @@ Lista::Pesos(int inicio, bool logFile, bool mst = false)
       v = listaAdj[u][i];
       pesoUV = listaPesos[u][i];
 
-      if (explorados[v] == false)
+      if (!explorados[v])
       {
-        if (mst == false)
+        if (!mst)
         //Dijkstra
         {
           if(distancia[v] > (distancia[u] + pesoUV))
@@ -661,7 +674,7 @@ bool Lista::bipartidoComponente(int inicio, std::vector<bool> &explorados)
       int w;
       w = listaAdj[v][i];
 
-      if (explorados[w] == false)
+      if (!explorados[w])
       {
         cor[w] = 1-cor[v];
         explorados[w] = true;
@@ -683,7 +696,7 @@ bool Lista::bipartido()
   std::vector <bool> explorados(vertMax, false);
   for (int i = 1; i < nVertices; i++)
   {
-    if (explorados[i] == false)
+    if (!explorados[i])
     {
       if(!bipartidoComponente(i, explorados))
       {
@@ -747,7 +760,7 @@ Lista::DFSpair(int u, std::vector <int> &parU, std::vector <int> &parV)
       int v = listaAdj[u][i];
       if(nivel[parV[v]] == nivel[u] + 1)
       {
-        if(DFSpair(parV[v], parU, parV) == true)
+        if(DFSpair(parV[v], parU, parV))
         {
           parV[v] = u;
           parU[u] = v;
@@ -778,6 +791,7 @@ Lista::emparelhamento(std::string outputName = "temp")
   nivel.clear(); //Limpa a lista de níveis
   nivel.resize(vertMax); //Redimensiona a lista conforme necessário
 
+  clock_t tInicio = clock();
   while (BFSpair(parU, parV))
   {
     n++;
@@ -791,6 +805,10 @@ Lista::emparelhamento(std::string outputName = "temp")
       }
     }
   }
+  clock_t tFinal = clock();
+  tFinal =  (clock() - tInicio)/(CLOCKS_PER_SEC/1000);
+
+  cout << "Tempo decorrido: " << tFinal << " ms" << endl;
 
   ofstream output;
   output.open((outputName+"_result.txt").c_str());
@@ -803,5 +821,67 @@ Lista::emparelhamento(std::string outputName = "temp")
       output << parU[i] << " " << i << endl; //Adiciona o título
     }
   }
-  cout << emparelhamentoMaximo << endl;
+  output.close();
+  cout << "Emparelhamento: " << emparelhamentoMaximo << endl;
+}
+
+Lista::BellmanFord(int inicio = 1, std::string outputName = "temp")
+{
+  distOrigem.resize(vertMax); //Redimensiona a lista conforme necessário
+  distOrigem.clear(); //Limpa a lista de níveis
+  distOrigem.resize(vertMax); //Redimensiona a lista conforme necessário
+  pai.clear(); //Limpa a lista de pais
+  pai.resize(vertMax); //Redimensiona a lista conforme necessário
+  pai[inicio] = inicio; //Coloca o pai do vértice inicial como ele mesmo
+
+  clock_t tInicio = clock();
+
+  for (int i = 1; i <= nVertices; i++)
+  {
+    distOrigem[i] = 10000000;  //Define todas as distâncias como "infinito"
+  }
+  distOrigem[inicio] = 0; //Coloca o nível do vértice inicial como 0
+
+  for (int i = 1; i <= nVertices+100; i++)
+  {
+    bool continuar = false;
+    for (int v = 1; v <= nVertices; v++)
+    {
+      for (int j = 1; j <= listaAdj[v].size()-1; j++) //Varre o array de vértices
+      {
+        int w = listaAdj[v][j];
+        double distV = distOrigem[v];
+        double distW = distOrigem[w] + listaPesos[v][j];
+        if (distW < distV)
+        {
+          pai[v] = w;
+          distOrigem[v] = distW;
+          continuar = true;
+        }
+      }
+    }
+    if (!continuar)
+    {
+      clock_t tFinal = clock();
+      tFinal =  (clock() - tInicio)/(CLOCKS_PER_SEC/1000);
+      cout << "Convergiu em " << tInicio << " ms" <<  endl;
+
+      ofstream output;
+      output.open((outputName+"_result.txt").c_str());
+
+      for (int i = 1; i <= nVertices; i++)
+      {
+
+        output << i << "-" << pai[i] << " Dist: " << distOrigem[i] << endl;
+      }
+      output.close();
+      return true;
+    }
+    if ((i == nVertices) && continuar)
+    {
+      cout << "Ciclo negativo!!" << endl;
+      return false;
+    }
+  }
+
 }
