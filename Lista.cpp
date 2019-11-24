@@ -31,7 +31,7 @@ Lista::bubbleSort(std::vector < vector < int> > &lista, int tamanho) //Ordena um
   }
 }
 
-Lista::carregar(std::string arquivo, bool pesos = false)
+Lista::carregar(std::string arquivo, bool pesos = false, bool direcionado = false, bool inverter = false)
 {
   //Abre o arquivo
   string inputFile = arquivo+".txt";
@@ -72,8 +72,19 @@ Lista::carregar(std::string arquivo, bool pesos = false)
         //Adiciona a aresta ao vetor
         if(v <= vertMax && a <= vertMax)
         {
-          listaAdj[v].push_back(a);
-          listaAdj[a].push_back(v);
+          if (!inverter)
+          {
+            listaAdj[v].push_back(a);
+          }
+          else
+          {
+            listaAdj[a].push_back(v);
+          }
+
+          if (!direcionado)
+          {
+              listaAdj[a].push_back(v);
+          }
           nArestas++;
         }
       }
@@ -86,11 +97,25 @@ Lista::carregar(std::string arquivo, bool pesos = false)
         //Adiciona a aresta ao vetor
         if(v <= vertMax && a <= vertMax)
         {
-          listaAdj[v].push_back(a);
-          listaAdj[a].push_back(v);
+          if (direcionado)
+          {
+            if (!inverter)
+            {
+              listaAdj[v].push_back(a);
+              listaPesos[v].push_back(w);
+            }
+            else
+            {
+              listaAdj[a].push_back(v);
+              listaPesos[a].push_back(w);
+            }
+          }
+          else
+          {
+            listaAdj[a].push_back(v);
+            listaPesos[a].push_back(w);
+          }
 
-          listaPesos[v].push_back(w);
-          listaPesos[a].push_back(w);
           if (w < 0)
           {
             negativo = true;
@@ -99,6 +124,7 @@ Lista::carregar(std::string arquivo, bool pesos = false)
         }
       }
     }
+    cout << listaAdj[1][1] << " " << listaPesos[1][1] << endl;
     // cout << "Lista carregada com sucesso!" << endl;
   }
   inFile.close();
@@ -842,7 +868,7 @@ Lista::BellmanFord(int inicio = 1, std::string outputName = "temp")
   }
   distOrigem[inicio] = 0; //Coloca o nível do vértice inicial como 0
 
-  for (int i = 1; i <= nVertices+100; i++)
+  for (int i = 1; i <= nVertices+1; i++)
   {
     bool continuar = false;
     for (int v = 1; v <= nVertices; v++)
@@ -850,6 +876,7 @@ Lista::BellmanFord(int inicio = 1, std::string outputName = "temp")
       for (int j = 1; j <= listaAdj[v].size()-1; j++) //Varre o array de vértices
       {
         int w = listaAdj[v][j];
+
         double distV = distOrigem[v];
         double distW = distOrigem[w] + listaPesos[v][j];
         if (distW < distV)
@@ -867,7 +894,7 @@ Lista::BellmanFord(int inicio = 1, std::string outputName = "temp")
       cout << "Convergiu em " << tInicio << " ms" <<  endl;
 
       ofstream output;
-      output.open((outputName+"_result.txt").c_str());
+      output.open((outputName+"_resultBF.txt").c_str());
 
       for (int i = 1; i <= nVertices; i++)
       {
@@ -877,11 +904,78 @@ Lista::BellmanFord(int inicio = 1, std::string outputName = "temp")
       output.close();
       return true;
     }
-    if ((i == nVertices) && continuar)
+    if ((i == nVertices+1) && continuar)
     {
       cout << "Ciclo negativo!!" << endl;
       return false;
     }
   }
 
+}
+
+Lista::FloydWarshall(std::string outputName = "temp")
+{
+  std::vector <std::vector<double> > distancias;
+  distancias.resize(nVertices+1);
+
+  clock_t tInicio = clock();
+
+  //Inicializa a matriz
+  for(int i = 0; i <= nVertices; i++)
+  {
+
+    distancias[i].resize(nVertices+1);
+    for (int j = 1; j <= nVertices; j++)
+    {
+      distancias[i][j] = 10000000;
+    }
+    distancias[0][i] = i;
+    distancias[i][i] = 0;
+    if (i > 0)
+    {
+      for (int j = 1; j <= listaAdj[i].size()-1; j++)
+      {
+        int v = listaAdj[i][j];
+        distancias[i][v] = listaPesos[i][j];
+      }
+    }
+  }
+  //Algoritmo de Floyd-Warshall
+
+  for(int i = 1; i <= nVertices; i++)
+  {
+    // bool continuar = false;
+    for (int j = 1; j <= nVertices; j++)
+    {
+      for (int k = 1; k <= nVertices; k++)
+      {
+        if(distancias[j][k] > (distancias[j][i] + distancias[i][k]))
+        {
+          distancias[j][k] = (distancias[j][i] + distancias[i][k]);
+          // continuar = true;
+        }
+      }
+    }
+    // if (!continuar)
+    // {
+    //   i = nVertices;
+    // }
+  }
+
+  clock_t tFinal = clock();
+  tFinal =  (clock() - tInicio)/(CLOCKS_PER_SEC/1000);
+  cout << "Convergiu em " << tInicio << " ms" <<  endl;
+
+  //Exporta a matriz
+  ofstream output;
+  output.open((outputName+"_resultFW.txt").c_str());
+  for (int i = 0; i <= nVertices; i++)
+  {
+    output << i;
+    for (int j = 1; j <= nVertices; j++)
+    {
+      output << " " << distancias[i][j];
+    }
+    output << endl;
+  }
 }

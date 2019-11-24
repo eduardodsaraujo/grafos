@@ -9,7 +9,7 @@
 class Lista
 {
   public:
-    carregar(std::string arquivo, bool pesos);
+    carregar(std::string arquivo, bool pesos, bool direcionado, bool inverter);
     caminho(int in);
     excentricidade();
     minimumSpanningTree();
@@ -31,6 +31,7 @@ class Lista
     DFSpair(int u, std::vector <int> &parU, std::vector <int> &parV);
     emparelhamento(std::string outputName);
     BellmanFord(int inicio, std::string outputName);
+    FloydWarshall(std::string);
   protected:
 
   private:
