@@ -26,7 +26,7 @@ int main()
 
     std::string grafo = "ER_50";
     lista.carregar(grafo, true, true, true);
-    lista.BellmanFord(1, grafo);
+    lista.Pesos(grafo, 1);
     lista2.carregar(grafo, true, true, false);
-    lista2.FloydWarshall(grafo);
+    lista2.Pesos(grafo);
 }

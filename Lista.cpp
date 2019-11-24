@@ -484,7 +484,7 @@ Lista::diametro(string outputName)
   outputDiametro.close();
 }
 
-Lista::Pesos(int inicio, bool logFile, bool mst = false)
+Lista::DijkstraPrim(int inicio, bool mst = false)
 {
 
   std::vector <bool> explorados(vertMax, false);
@@ -851,7 +851,7 @@ Lista::emparelhamento(std::string outputName = "temp")
   cout << "Emparelhamento: " << emparelhamentoMaximo << endl;
 }
 
-Lista::BellmanFord(int inicio = 1, std::string outputName = "temp")
+Lista::BellmanFord(int inicio, std::string outputName = "temp")
 {
   distOrigem.resize(vertMax); //Redimensiona a lista conforme necessário
   distOrigem.clear(); //Limpa a lista de níveis
@@ -977,5 +977,27 @@ Lista::FloydWarshall(std::string outputName = "temp")
       output << " " << distancias[i][j];
     }
     output << endl;
+  }
+}
+
+Lista::Pesos(std::string outputName = "temp", int inicio = 0, bool mst = false)
+{
+  if (inicio == 0)
+  {
+    cout << "Rodando Floyd-Warshall..." << endl;
+    FloydWarshall(outputName);
+  }
+  else
+  {
+    if (negativo)
+    {
+      cout << "Rodando Bellman-Ford..." << endl;
+      BellmanFord(inicio, outputName);
+    }
+    else
+    {
+      cout << "Rodando Dijkstra/Prim..." << endl;
+      DijkstraPrim(inicio, mst);
+    }
   }
 }

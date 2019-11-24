@@ -17,7 +17,7 @@ class Lista
     vizinhos(int vert);
     BFS(int inicio, std::string outputName, bool log);
     DFS(int inicio, std::string outputName, bool log);
-    Pesos(int inicio, bool logFile, bool mst);
+    DijkstraPrim(int inicio, bool mst);
     int BFSdiametro(int inicio, std::vector<bool> explorados);
     geraEstatisticas(std::string fileName);
     componentes(std::string outputName);
@@ -32,6 +32,7 @@ class Lista
     emparelhamento(std::string outputName);
     BellmanFord(int inicio, std::string outputName);
     FloydWarshall(std::string);
+    Pesos(std::string outputName, int inicio, bool mst);
   protected:
 
   private:
